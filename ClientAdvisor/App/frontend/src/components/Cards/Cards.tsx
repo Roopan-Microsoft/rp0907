@@ -18,6 +18,12 @@ const Cards: React.FC<CardsProps> = ({ onCardClick }) => {
   const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
   useEffect(() => {
+    if(selectedClientId != null && appStateContext?.state.clientId == ''){
+      setSelectedClientId('')
+    }
+  },[appStateContext?.state.clientId]);
+  
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoadingUsers(true)
