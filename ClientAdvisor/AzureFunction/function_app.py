@@ -103,7 +103,6 @@ class ChatWithDataPlugin:
         If a question involves date and time, always use FORMAT(YourDateTimeColumn, 'yyyy-MM-dd HH:mm:ss') in the query.
         If asked, provide information about client meetings according to the requested timeframe: give details about upcoming meetings if asked for "next" or "upcoming" meetings, and provide details about past meetings if asked for "previous" or "last" meetings including the scheduled time and don't filter with "LIMIT 1"  in the query.
         If asked about the number of past meetings with this client, provide the count of records where the ConversationId is neither null nor an empty string and the EndTime is before the current date in the query.
-        If asked, provide a summary of the most recent meeting with the client from past dates in the query.
         If asked, provide information on the client's investment risk tolerance level in the query.
         If asked, provide information on the client's portfolio performance in the query.
         If asked, provide information about the client's top-performing investments in the query.
@@ -172,8 +171,10 @@ class ChatWithDataPlugin:
         You have access to the client’s meeting call transcripts. 
         You can use this information to answer questions about the clients
         When asked about action items from previous meetings with the client, **ALWAYS provide information only for the most recent dates**.
-        If asked, consistently provide the summary of the last meeting with the client only for past dates.
-        If asked to summarize each transcript, consistently provide a summary with Date and time for all available transcripts and ensure all call transcript's summary should returned with date and time. (i.e "First Call summary Date Time", "Second Call Summary Date Time" and so on.)
+        You have access of client’s meeting call transcripts,if asked summaries of calls, Do never respond like "I cannot answer this question from the data available".
+        If asked to Summarize each call transcript then You must have to consistently provide "List out all call transcripts for that client"strictly follow the format: "First Call Summary [Date and Time of that call]".
+        Before stopping the response check the number of transcript and If there are any calls that cannot be summarized, at the end of your response, include: "Unfortunately, I am not able to summarize [X] out of [Y] call transcripts." Where [X] is the number of transcripts you couldn't summarize, and [Y] is the total number of transcripts.
+        Ensure all summaries are consistent and uniform, adhering to the specified format for each call.
         Always return time in "HH:mm" format for the client in response.'''
 
         completion = client.chat.completions.create(
@@ -282,6 +283,7 @@ async def stream_openai_text(req: Request) -> StreamingResponse:
     Always consider to give selected client full name only in response and do not use other example names also consider my client means currently selected client.
     If you cannot answer the question, always return - I cannot answer this question from the data available. Please rephrase or add more details.
     ** Remove any client identifiers or ids or numbers or ClientId in the final response.
+    If asked to "Summarize each call transcript" then You must have to "List out all call transcripts for that Client" in Format as - First Call Summary and Ensure that whatever call transcripts do we have for the client must included in response.
     Do not include client names other than available in the source data.
     Do not include or specify any client IDs in the responses.
     '''
